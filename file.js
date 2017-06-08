@@ -1,58 +1,13 @@
 'use strict';
 
-let fs = require('fs');
+let fs = require('./bnFs');
 let Path = require('path');
 let tinify = require('tinify');
+let co = require('co')
 
 let fileArray = [];
 let fileType = ['.png', '.jpg'];
-
-/**
- * 处理一个路径下的所有文件
- * @param {String} dirPath 
- */
-function readDirFile (dirPath) {
-    let realPath = convertPath(dirPath);
-	fs.readdir(dirPath, function(err, files){
-        if (err) {
-            console.error('Dir path error:%s', JSON.stringify(err, null, 2));
-            return ;
-        }
-
-        files.forEach(function(file) {
-            // console.log('extname', Path.extname(file));
-            let tmpPath = Path.join(dirPath, file);
-
-            fs.stat(tmpPath, function(statErr, stats){
-                if (statErr) {
-                    console.error('file stat error: %s', JSON.stringify(statErr, null, 2));
-                    return ;
-                }
-                if (stats.isDirectory()) {
-                    readDirFile(tmpPath);
-                } else {
-                    if (conformType(tmpPath, fileType)) {
-                        console.log('fileName:%s\n', tmpPath);
-                    }
-                }
-            });
-        }, this);
-    });
-};
-
-/**
- * 将路径转换为绝对路径
- * @param {String} path 文件路径
- * @return {String} 绝对路径
- */ 
-function convertPath (path) {
-    if (Path.isAbsolute(path)){
-        // 是绝对路径直接返回
-        return path;
-    } else {
-        return Path.normalize(Path.join(__dirname, path));
-    }
-};
+let ignoreFileName = 'ignore.bnignore';
 
 /**
  * 
@@ -65,4 +20,69 @@ function conformType (file, types) {
     return types.indexOf(extName) != -1;
 };
 
-readDirFile("D:/zhljian/work/tinify");
+function isIgnore (path, ignoreStr) {
+    try {
+        let relativePath = Path.relative(realDir, path);
+        if (!relativePath || !ignoreStr) {
+            return false;
+        }
+        let ignoreArray = ignoreStr.split('\n');
+        for (let i = 0; i < ignoreArray.length; i++) {
+            if (!ignoreArray[i]) {
+                return ;
+            }
+            let reg = new RegExp(ignoreArray[i], 'g');
+            if (ignoreArray[i] != '123\\456') {
+                continue;
+            }
+            console.log('ignore:%s, relativePath:%s, reg:%s, path:%s', ignoreArray[i], relativePath, reg, path);
+            if (relativePath.search(reg) != -1) {
+                return true;
+            }
+        }
+        return false;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+    
+};
+
+let readDirFile = function (dirPath){
+    return co(function *() {
+        dirPath = fs.convertAbsolutePath(dirPath);
+        let files = yield fs.readdir(dirPath);
+        let ignoreFile = yield fs.getIgnoreFile(realDir);
+        // console.log('dirPath:%s', dirPath);
+
+        for (let i = 0; i < files.length; i++) {
+            let fileName = files[i];
+            if (fileName == ignoreFileName) {
+                continue;
+            }
+            let filePath = Path.join(dirPath, fileName);
+
+            if (isIgnore(filePath, ignoreFile)) {
+                // console.log('fileName:%s, ignoreFile:%s', fileName, ignoreFile);
+                continue;
+            }
+            let stat = yield fs.stat(filePath);
+
+            if (stat.isDirectory()){
+                yield readDirFile(filePath);
+            } else {
+                if (conformType(filePath, fileType)) {
+                    console.log('file:%s', filePath);
+                }
+            }
+        }
+    }).catch(function (err) {
+        console.error(err);
+    });
+};
+let realDir = "D:/zhljian/work/tinify";
+readDirFile("D:/zhljian/work/tinify").then(function(){
+    console.log("success");
+}, function(err){
+    console.error(err);
+})
