@@ -3,7 +3,8 @@
 let fs = require('./bnFs');
 let Path = require('path');
 let tinify = require('tinify');
-let co = require('co')
+let co = require('co');
+let minimatch = require('minimatch');
 
 let fileArray = [];
 let fileType = ['.png', '.jpg'];
@@ -23,20 +24,17 @@ function conformType (file, types) {
 function isIgnore (path, ignoreStr) {
     try {
         let relativePath = Path.relative(realDir, path);
-        if (!relativePath || !ignoreStr) {
+        if (!ignoreStr) {
             return false;
         }
         let ignoreArray = ignoreStr.split('\n');
         for (let i = 0; i < ignoreArray.length; i++) {
             if (!ignoreArray[i]) {
-                return ;
+                continue ;
             }
-            let reg = new RegExp(ignoreArray[i], 'g');
-            if (ignoreArray[i] != '123\\456') {
-                continue;
-            }
-            console.log('ignore:%s, relativePath:%s, reg:%s, path:%s', ignoreArray[i], relativePath, reg, path);
-            if (relativePath.search(reg) != -1) {
+            
+            // console.log('ignore:%s, relativePath:%s', ignoreArray[i], relativePath, reg, path);
+            if (minimatch(relativePath, ignoreArray[i])) {
                 return true;
             }
         }
@@ -53,7 +51,6 @@ let readDirFile = function (dirPath){
         dirPath = fs.convertAbsolutePath(dirPath);
         let files = yield fs.readdir(dirPath);
         let ignoreFile = yield fs.getIgnoreFile(realDir);
-        // console.log('dirPath:%s', dirPath);
 
         for (let i = 0; i < files.length; i++) {
             let fileName = files[i];
@@ -63,7 +60,6 @@ let readDirFile = function (dirPath){
             let filePath = Path.join(dirPath, fileName);
 
             if (isIgnore(filePath, ignoreFile)) {
-                // console.log('fileName:%s, ignoreFile:%s', fileName, ignoreFile);
                 continue;
             }
             let stat = yield fs.stat(filePath);
