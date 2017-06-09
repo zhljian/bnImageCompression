@@ -1,3 +1,10 @@
+/**
+ * 图片压缩类
+ * author : zhljian
+ * date   : 2017/6/9
+ * description :
+ * 该类主要是封装了tinify库
+ */
 'use strict';
 
 let tinify = require('tinify');
@@ -11,7 +18,7 @@ let bnTinify = {};
  * @return {Promise}
  */
 bnTinify.compression = function(source, target, key){
-	tinify = key;
+	tinify.key = key;
 	let sourceFile = tinify.fromFile(source);
 
 	return sourceFile.toFile(target);

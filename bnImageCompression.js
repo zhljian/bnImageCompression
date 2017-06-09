@@ -1,4 +1,11 @@
-'use strict'
+/**
+ * 图片压缩类
+ * author : zhljian
+ * date   : 2017/6/9
+ * description :
+ * 该类提供了压缩文件夹的方法(comoressionDir),压缩一个文件的方法(compressionFile)
+ */
+'use strict';
 
 let fs = require('./bnFs');
 let tinify = require('./bnTinify');
@@ -6,11 +13,12 @@ let Path = require('path');
 let co = require('co');
 let minimatch = require('minimatch');
 
+// 忽略文件
 const IGNORE_FILE = fs.ignoreFileName;
 
 let bnImageCompression = {};
 
-bnImageCompression.fileType = ['.png', '.jpg'];
+bnImageCompression.fileType = ['.png','.jpg'];
 
 /**
  * 压缩一个文件夹

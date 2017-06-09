@@ -1,7 +1,14 @@
+/**
+ * 文件读写类
+ * author : zhljian
+ * date   : 2017/6/9
+ * description :
+ * 该类主要是封装了fs库,将异步方法封装成promise
+ */
+'use strict';
 let fs = require('fs');
 let Path = require('path');
-
-let DEBUG = 0;
+let DEBUG = 0;  // 调试模式
 let bnFs = {};
 bnFs.ignoreFileName = 'ignore.bnignore';
 
@@ -25,6 +32,11 @@ bnFs.convertAbsolutePath = function(path){
     }
 };
 
+/**
+ * 读取文件夹下的所有文件
+ * @param {String} path 文件夹路径
+ * @return {Promise}
+ */
 bnFs.readdir = function(path){
     let absolutePath = this.convertAbsolutePath(path);
     return new Promise(function(resolve, reject){
@@ -39,6 +51,11 @@ bnFs.readdir = function(path){
 	});
 };
 
+/**
+ * 读取文件信息
+ * @param {String} path 文件夹路径
+ * @return {Promise}
+ */
 bnFs.stat = function(path){
     let absolutePath = this.convertAbsolutePath(path);
     return new Promise(function(resolve, reject){
@@ -53,6 +70,11 @@ bnFs.stat = function(path){
 	});
 };
 
+/**
+ * 读取文件内容
+ * @param {String} path 文件夹路径
+ * @return {Promise}
+ */
 bnFs.readFile = function(path) {
     let absolutePath = this.convertAbsolutePath(path);
     return new Promise(function(resolve, reject){
@@ -67,7 +89,11 @@ bnFs.readFile = function(path) {
 	});
 };
 
-
+/**
+ * 读取路径下忽略文件内容
+ * @param {String} dirPath  文件夹路径
+ * @return {Promise}
+ */
 bnFs.getIgnoreFile = function(dirPath) {
     let ignorePath = Path.join(dirPath, this.ignoreFileName);
     return new Promise(function(resolve, reject){
