@@ -1,0 +1,28 @@
+{
+  "name": "bncompression",
+  "version": "1.0.0",
+  "description": "bn image compression",
+  "main": "bnImageCompression.js",
+  "dependencies": {
+    "co": "^4.6.0",
+    "commander": "^2.9.0",
+    "glob": "^7.1.2",
+    "tinify": "^1.5.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhljian/bnImageCompression.git"
+  },
+  "keywords": [
+    "compression"
+  ],
+  "author": "zhljian",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zhljian/bnImageCompression/issues"
+  },
+  "homepage": "https://github.com/zhljian/bnImageCompression#readme"
+}
