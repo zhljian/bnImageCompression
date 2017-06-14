@@ -20,13 +20,16 @@ if (!inputPath) {
     console.log('key error');
 } else {
     if (dir) {
-        console.log(inputPath);
         compression.compressionDir(inputPath, outPutPath, key).then(function(){
             console.log('compression success');
+        }, function(error){
+            console.error(error);
         });
     } else {
         compression.compressionFile(inputPath, outPutPath, key).then(function(){
             console.log('compression success');
+        }, function(error){
+            console.error(error);
         });
     }
     

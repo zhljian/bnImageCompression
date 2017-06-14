@@ -41,11 +41,10 @@ bnImageCompression.compressionDir = function(sourceDir, targetDir, key){
         for (let i = 0; i < self.handleFiles.length;i++) {
             let fileObj = self.handleFiles[i];
 
-            yield self.compression(fileObj.source, fileObj.target, self.key);
-            console.log('(%s/%s)', i + 1, self.handleFiles.length)
+            // yield self.compression(fileObj.source, fileObj.target, self.key);
+            console.log('progress:(%s/%s)', i + 1, self.handleFiles.length)
         }
     }).catch(function (error) {
-        console.error(error);
         throw error;
     });
 };
@@ -62,7 +61,6 @@ bnImageCompression.compressionFile = function(source, target, key){
         target = target || source;
         yield tinify.compression(source, target, key);
     }).catch(function (error) {
-        console.error(error);
         throw error;
     });
 };
@@ -83,7 +81,6 @@ bnImageCompression._getSourceFiles = function(sourceDir, targetDir) {
             yield self._getOneFile(sourceDir, targetDir, fileName);
         }
     }).catch(function (error) {
-        console.error(error);
         throw error;
     });
 };
@@ -126,7 +123,6 @@ bnImageCompression._getOneFile = function(dirPath, targetDir, fileName){
             }
         }
     }).catch(function (error) {
-        console.error(error);
         throw error;
     });
 };
@@ -159,7 +155,6 @@ bnImageCompression._getIgnoreFile = function(dirPath) {
             return str;
         }
     }).catch(function (error) {
-        console.error(error);
         throw error;
     });
 };
@@ -189,13 +184,12 @@ bnImageCompression._isIgnore = function(path, ignoreStr) {
         }
         return false;
     } catch (error) {
-        console.error(error);
         throw error;
     }
 };
 
 /**
- * 目标路径是否存在，不存在则创建路径
+ * 目标路径是否存在，不存在则创建文件夹
  * @param {String} dirPath  文件夹路径
  * @return {Promise}
  */
@@ -214,7 +208,6 @@ bnImageCompression._exitsAndMakeDir = function(dirPath) {
         }
         yield fs.mkdir(dirPath);
     }).catch(function (error) {
-        console.error(error);
         throw error;
     });
 };
