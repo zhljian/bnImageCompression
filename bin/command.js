@@ -1,4 +1,4 @@
-let compression = require('./bnImageCompression');
+let compression = require('../lib/bnImageCompression');
 let program = require('commander');
 
 program

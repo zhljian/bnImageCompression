@@ -2,7 +2,10 @@
   "name": "bncompression",
   "version": "1.0.0",
   "description": "bn image compression",
-  "main": "bnImageCompression.js",
+  "main": "index.js",
+  "bin": {
+    "bn-compression": "bin/command.js"
+  },
   "dependencies": {
     "co": "^4.6.0",
     "commander": "^2.9.0",
