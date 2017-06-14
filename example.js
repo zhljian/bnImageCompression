@@ -22,11 +22,11 @@ if (!inputPath) {
     if (dir) {
         console.log(inputPath);
         compression.compressionDir(inputPath, outPutPath, key).then(function(){
-            console.log('compressio success');
+            console.log('compression success');
         });
     } else {
         compression.compressionFile(inputPath, outPutPath, key).then(function(){
-            console.log('compressio success');
+            console.log('compression success');
         });
     }
     
