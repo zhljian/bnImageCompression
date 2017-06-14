@@ -10,7 +10,6 @@ let fs = require('fs');
 let Path = require('path');
 let DEBUG = 0;  // 调试模式
 let bnFs = {};
-bnFs.ignoreFileName = 'ignore.bnignore';
 
 let mylog = function(log){
     if (DEBUG) {
@@ -47,7 +46,7 @@ bnFs.readdir = function(path){
             }
             mylog('read dir success!');
             resolve(files);
-        })
+        });
 	});
 };
 
@@ -66,7 +65,7 @@ bnFs.stat = function(path){
             }
             mylog('file stat success!');
             resolve(stats);
-        })
+        });
 	});
 };
 
@@ -78,36 +77,45 @@ bnFs.stat = function(path){
 bnFs.readFile = function(path) {
     let absolutePath = this.convertAbsolutePath(path);
     return new Promise(function(resolve, reject){
-		fs.readFile(absolutePath, function(error, file){
+		fs.readFile(absolutePath, 'utf-8', function(error, file){
             if (error) {
                 mylog(JSON.stringify(error, null, 2));
                 reject(error);
             }
             mylog('read file success!');
             resolve(file);
-        })
+        });
 	});
 };
 
 /**
- * 读取路径下忽略文件内容
+ * 创建文件夹
  * @param {String} dirPath  文件夹路径
  * @return {Promise}
  */
-bnFs.getIgnoreFile = function(dirPath) {
-    let ignorePath = Path.join(dirPath, this.ignoreFileName);
+bnFs.mkdir = function(dirPath) {
     return new Promise(function(resolve, reject){
-        if (!fs.existsSync(ignorePath)) {
-            resolve(null);
-        }
-		fs.readFile(ignorePath, 'utf8', function(error, str){
+		fs.mkdir(dirPath, function(error){
             if (error) {
                 mylog(JSON.stringify(error, null, 2));
                 reject(error);
             }
-            mylog('getIgnoreFile success!');
-            resolve(str);
-        })
+            mylog('mkdir success!');
+            resolve(true);
+        });
+	});
+}
+
+/**
+ * 文件是否存在
+ * @param {String} path  文件夹路径
+ * @return {Promise}
+ */
+bnFs.exists = function(path) {
+    return new Promise(function(resolve, reject){
+		fs.exists(path, function(exist){
+            resolve(exist);
+        });
 	});
 };
 

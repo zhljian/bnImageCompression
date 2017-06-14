@@ -14,7 +14,7 @@ let co = require('co');
 let minimatch = require('minimatch');
 
 // 忽略文件
-const IGNORE_FILE = fs.ignoreFileName;
+const IGNORE_FILE = 'ignore.bnignore';
 
 let bnImageCompression = {};
 
@@ -35,8 +35,9 @@ bnImageCompression.compressionDir = function(sourceDir, targetDir, key){
         self.key = key;
         
         yield self._compressionDir(self.sourceDir, self.targetDir);
-    }).catch(function (err) {
-        console.error(err);
+    }).catch(function (error) {
+        console.error(error);
+        throw error;
     });
 };
 
@@ -51,8 +52,9 @@ bnImageCompression.compressionFile = function(source, target, key){
     return co(function *() {
         target = target || source;
         yield tinify.compression(source, target, key);
-    }).catch(function (err) {
-        console.error(err);
+    }).catch(function (error) {
+        console.error(error);
+        throw error;
     });
 };
 
@@ -71,8 +73,9 @@ bnImageCompression._compressionDir = function(sourceDir, targetDir) {
             let fileName = files[i];
             yield self._compressionDirOneFile(sourceDir, targetDir, fileName);
         }
-    }).catch(function (err) {
-        console.error(err);
+    }).catch(function (error) {
+        console.error(error);
+        throw error;
     });
 };
 
@@ -87,7 +90,7 @@ bnImageCompression._compressionDir = function(sourceDir, targetDir) {
 bnImageCompression._compressionDirOneFile = function(dirPath, targetDir, fileName){
     let self = this;
     return co(function *() {
-        let ignoreFile = yield fs.getIgnoreFile(self.sourceDir);   // 忽略配置文件
+        let ignoreFile = yield self._getIgnoreFile(self.sourceDir);   // 忽略配置文件
         // 如果文件是忽略文件,不处理
         if (fileName == IGNORE_FILE) {
             return ;
@@ -111,10 +114,13 @@ bnImageCompression._compressionDirOneFile = function(dirPath, targetDir, fileNam
                 // TODO  压缩文件
                 console.log('input file:%s', filePath);
                 console.log('output file:%s', newTargetDir);
+                yield self._exitsAndMakeDir(targetDir);
+                yield self.compressionFile(filePath, newTargetDir, self.key);
             }
         }
-    }).catch(function (err) {
-        console.error(err);
+    }).catch(function (error) {
+        console.error(error);
+        throw error;
     });
 };
 
@@ -130,7 +136,32 @@ bnImageCompression._conformType = function(file, types) {
 };
 
 /**
- * 
+ * 读取路径下忽略文件内容
+ * @param {String} dirPath  文件夹路径
+ * @return {Promise}
+ */
+bnImageCompression._getIgnoreFile = function(dirPath) {
+    let self = this;
+    return co(function *() {
+        let ignorePath = Path.join(dirPath, IGNORE_FILE);
+        let exist = yield fs.exists(ignorePath);       // 文件夹下的所有文件
+
+        if (exist) {
+            let str = yield fs.readFile(ignorePath);
+
+            return str;
+        }
+    }).catch(function (error) {
+        console.error(error);
+        throw error;
+    });
+};
+
+/**
+ * 文件是否需要忽略
+ * @param {String} path       文件路径
+ * @param {String} ignoreStr  忽略文件名
+ * @return {Promise}
  */
 bnImageCompression._isIgnore = function(path, ignoreStr) {
     try {
@@ -154,6 +185,31 @@ bnImageCompression._isIgnore = function(path, ignoreStr) {
         console.error(error);
         throw error;
     }
+};
+
+/**
+ * 目标路径是否存在，不存在则创建路径
+ * @param {String} dirPath  文件夹路径
+ * @return {Promise}
+ */
+bnImageCompression._exitsAndMakeDir = function(dirPath) {
+    let self = this;
+    return co(function *() {
+        let exist = yield fs.exists(dirPath);
+        // 文件已存在
+        if (exist) {
+            return ;
+        }
+        exist = yield fs.exists(Path.dirname(dirPath));
+        // 文件夹不存在则创建他的上一级文件夹
+        if (!exist) {
+            yield self._exitsAndMakeDir(Path.dirname(dirPath));
+        }
+        yield fs.mkdir(dirPath);
+    }).catch(function (error) {
+        console.error(error);
+        throw error;
+    });
 };
 
 module.exports = bnImageCompression;
