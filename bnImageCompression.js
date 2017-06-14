@@ -34,7 +34,7 @@ bnImageCompression.compressionDir = function(sourceDir, targetDir, key){
         self.targetDir = targetDir || self.sourceDir;
         self.key = key;
         
-        yield self._compressionDir(self.sourceDir)
+        yield self._compressionDir(self.sourceDir, self.targetDir);
     }).catch(function (err) {
         console.error(err);
     });
@@ -49,7 +49,7 @@ bnImageCompression.compressionDir = function(sourceDir, targetDir, key){
  */
 bnImageCompression.compressionFile = function(source, target, key){
     return co(function *() {
-        self.key = key;
+        target = target || source;
         yield tinify.compression(source, target, key);
     }).catch(function (err) {
         console.error(err);
@@ -59,16 +59,17 @@ bnImageCompression.compressionFile = function(source, target, key){
 /**
  * 压缩文件夹
  * @param {String} sourceDir    源文件夹
+ * @param {String} targetDir    目的文件夹
  * @return {Promise}
  */
-bnImageCompression._compressionDir = function(sourceDir) {
+bnImageCompression._compressionDir = function(sourceDir, targetDir) {
     let self = this;
     return co(function *() {
         let files = yield fs.readdir(sourceDir);       // 文件夹下的所有文件
 
         for (let i = 0; i < files.length; i++) {
             let fileName = files[i];
-            yield self._compressionDirOneFile(sourceDir, fileName);
+            yield self._compressionDirOneFile(sourceDir, targetDir, fileName);
         }
     }).catch(function (err) {
         console.error(err);
@@ -78,11 +79,12 @@ bnImageCompression._compressionDir = function(sourceDir) {
 /**
  * 压缩文件夹下的一个文件
  * @param {String} dirPath      文件夹路径
+ * @param {String} targetDir    目的文件夹
  * @param {String} fileName     文件名
  * @return {Promise}
  * 
  */
-bnImageCompression._compressionDirOneFile = function(dirPath, fileName){
+bnImageCompression._compressionDirOneFile = function(dirPath, targetDir, fileName){
     let self = this;
     return co(function *() {
         let ignoreFile = yield fs.getIgnoreFile(self.sourceDir);   // 忽略配置文件
@@ -92,6 +94,7 @@ bnImageCompression._compressionDirOneFile = function(dirPath, fileName){
         }
         // 处理文件路径
         let filePath = Path.join(dirPath, fileName);
+        let newTargetDir = Path.join(targetDir, fileName);
         
         // 需要忽略的文件
         if (self._isIgnore(filePath, ignoreFile)) {
@@ -100,13 +103,14 @@ bnImageCompression._compressionDirOneFile = function(dirPath, fileName){
         let stat = yield fs.stat(filePath);
         
         if (stat.isDirectory()){
-            // 文件及递归
-            yield self._compressionDir(filePath);
+            // 文件夹递归
+            yield self._compressionDir(filePath, newTargetDir);
         } else {
             // 文件类型是否符合
             if (self._conformType(filePath, self.fileType)) {
                 // TODO  压缩文件
-                console.log('file:%s', filePath);
+                console.log('input file:%s', filePath);
+                console.log('output file:%s', newTargetDir);
             }
         }
     }).catch(function (err) {

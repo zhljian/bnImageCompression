@@ -3,18 +3,33 @@ let program = require('commander');
 
 program
     .version('0.0.1')
-    .option('-o, --outuput', 'Output path')
-    .option('-i, --input', 'Input path')
+    .usage('[options] <file ...>')
+    .option('-o, --outuput <outuput>', 'output path(default <input>)')
+    .option('-i, --input <input>', 'input path')
+    .option('-d, --dir', 'compression dir')
+    .option('-k, --key <key>', 'tinify key')
     .parse(process.argv)
 
 let inputPath = program.input;
-//'D:/zhljian/work/tinify'
+let outPutPath = program.outuput;
+let dir = program.dir; 
+let key = program.key;
 if (!inputPath) {
     console.log('input error');
+} else if (!key){
+    console.log('key error');
 } else {
-    compression.compressionDir('D:/zhljian/work/tinify').then(function(){
-        console.log('success');
-    });
+    if (dir) {
+        console.log(inputPath);
+        compression.compressionDir(inputPath, outPutPath).then(function(){
+            console.log('success');
+        });
+    } else {
+        compression.compressionFile(inputPath, outPutPath, key).then(function(){
+            console.log('success');
+        });
+    }
+    
 }
 
 
