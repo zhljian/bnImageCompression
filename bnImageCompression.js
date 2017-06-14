@@ -41,7 +41,7 @@ bnImageCompression.compressionDir = function(sourceDir, targetDir, key){
         for (let i = 0; i < self.handleFiles.length;i++) {
             let fileObj = self.handleFiles[i];
 
-            // yield self.compression(fileObj.source, fileObj.target, self.key);
+            yield self.compression(fileObj.source, fileObj.target, self.key);
             console.log('progress:(%s/%s)', i + 1, self.handleFiles.length)
         }
     }).catch(function (error) {
