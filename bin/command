@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 let compression = require('../lib/bnImageCompression');
 let program = require('commander');
 
