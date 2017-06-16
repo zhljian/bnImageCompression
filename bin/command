@@ -8,6 +8,8 @@ program
     .option('-o, --outuput <outuput>', 'output path(default <input>)')
     .option('-i, --input <input>', 'input path')
     .option('-k, --key <key>', 'tinify key')
+    .option('-t, --test', 'test mode, output filename, not compress')
+    .option('-s, --silence', 'silence mode, not output')
     .parse(process.argv)
 
 let inputPath = program.input;
@@ -18,6 +20,7 @@ if (!inputPath) {
 } else if (!key){
     console.log('key error');
 } else {
+    compression.setOutMode(program.test, program.silence);
     compression.compress(inputPath, outPutPath, key).then(function(){
         console.log('compress success');
     }, function(error){
