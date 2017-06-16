@@ -7,7 +7,7 @@ program
     .usage('[options] <file ...>')
     .option('-o, --outuput <outuput>', 'output path(default <input>)')
     .option('-i, --input <input>', 'input path')
-    .option('-k, --key <key>', 'tinify key')
+    .option('-k, --key <key>', 'tinify keyFile')
     .option('-t, --test', 'test mode, output filename, not compress')
     .option('-s, --silence', 'silence mode, not output')
     .parse(process.argv)
