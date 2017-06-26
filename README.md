@@ -60,5 +60,5 @@ $ bn-compress --help
 -s | 静默模式,不会有任何输出
 
 例如
-`bn-compress -i /D/xxx/texture -k mWOnZaTbJTNARWKPy8mdgf1Ju3cROIjU -t`
+`bn-compress -i /D/xxx/texture -k key1 -t`
 执行上述命令后会输出`/D/xxx/texture`目录下所有的可压缩文件，如果去掉-t参数则会进行压缩。
