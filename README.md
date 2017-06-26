@@ -32,7 +32,7 @@ compression.compress("/d/xxx/texture", null, '../key.txt', function(error){
 ## 命令行
 打开命令行，输入`bn-compress --help`可以看到帮助界面
 ```
-$ node.exe ./bin/command --help
+$ bn-compress --help
 
   Usage: command [options] <file ...>
 
